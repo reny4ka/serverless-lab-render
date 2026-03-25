@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 
 def get_db_connection():
-    """Создает новое соединение с БД для каждого запроса"""
     DATABASE_URL = os.environ.get('DATABASE_URL')
 
     if not DATABASE_URL: return None
@@ -16,7 +15,7 @@ def get_db_connection():
         url = urlparse(DATABASE_URL)
         conn = psycopg2.connect(
             database=url.path[1:], user=url.username, password=url.password, host=url.hostname, port=url.port,
-            sslmode='require'  # Важно для Render PostgreSQL
+            sslmode='require'
         )
         return conn
     except Exception as e:
@@ -25,7 +24,6 @@ def get_db_connection():
 
 
 def init_db():
-    """Инициализация таблицы при первом запуске"""
     conn = get_db_connection()
 
     if conn:
@@ -44,12 +42,10 @@ def init_db():
             conn.close()
 
 
-# Инициализируем БД при старте init_db()
-
 
 @app.route('/save', methods=['POST'])
 def save_message():
-    conn = get_db_connection()  # Новое соединение для каждого запроса
+    conn = get_db_connection() 
     if not conn:
         return jsonify({"error": "DB not connected"}), 500
 
@@ -68,12 +64,12 @@ def save_message():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()  # Всегда закрываем соединение
+        conn.close() 
 
 
 @app.route('/messages')
 def get_messages():
-    conn = get_db_connection()  # Новое соединение для каждого запроса
+    conn = get_db_connection()
     if not conn:
         return jsonify({"error": "DB not connected"}), 500
 
@@ -88,7 +84,7 @@ def get_messages():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()  # Всегда закрываем соединение
+        conn.close()
 
 
 @app.route('/')
